@@ -36,7 +36,7 @@ const headers = [
   { value: "EMAIL", title: "Email" },
   { value: "actions", title: "操作", sortable: false },
 ];
-
+// CRUD的SERVER端API
 const cagentApiEndpoints = {
   get: "/get_cagents",
   add: "/create_cagent",

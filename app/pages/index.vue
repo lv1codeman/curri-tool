@@ -33,6 +33,26 @@
 import { ref, onMounted } from "vue";
 import { useRouter } from "vue-router";
 
+useHead({
+  title: "課務輔助工具",
+  meta: [
+    // 當使用者在瀏覽器中看到此頁面時，網頁的內部描述
+    {
+      name: "description",
+      content: "課務輔助工具歡迎頁面",
+    },
+
+    // 雖然 Line 爬蟲不會讀取這段，但為了內部頁面邏輯維護仍可保留
+    { property: "og:title", content: "課務輔助工具" },
+    { property: "og:description", content: "點擊以進入課務輔助工具。" },
+    {
+      property: "og:image",
+      content:
+        "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhDZW7g3vfx1t_jyAB1RXO-OeqFoiGoRsguhnsecEo7RsXuLgrngRRzUEbaaUh_bnINVm-COkVCARjZRALUS0aHKfcPHd-fMGLYyEndD0rEoZldLAAlDTbIlFGvUSV86WrN-r1yqxGFCJg/s150/sixer.JPG",
+    },
+  ],
+});
+
 const isExiting = ref(false);
 const isMainAnimationFinished = ref(false);
 const isFlashing = ref(false);

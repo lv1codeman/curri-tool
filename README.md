@@ -12,6 +12,18 @@
 
 # 在本地端執行
 
+1. 安裝使用到的模組，產生 node_modules
+
+```
+pnpm install
+```
+
+2. 設定 server 端網址  
+   建立一個.env 檔放在專案的根目錄  
+   內容貼上 NUXT_PUBLIC_API_BASE_URL=[server 端網址]  
+   server 端網址請詢問管理者
+3. 執行開發環境測試
+
 ```
 pnpm dev
 ```
