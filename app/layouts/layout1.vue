@@ -68,6 +68,21 @@
             prepend-icon="mdi-file-swap"
           ></v-list-item>
         </v-list-group>
+        <v-list-group value="tools">
+          <template v-slot:activator="{ props }">
+            <v-list-item
+              v-bind="props"
+              prepend-icon="mdi-star-circle-outline"
+              title="其他工具"
+            ></v-list-item>
+          </template>
+          <v-list-item
+            title="Youtube影片下載"
+            link
+            to="/Tools/YTconverter"
+            prepend-icon="mdi-download-box"
+          ></v-list-item>
+        </v-list-group>
       </v-list>
     </v-navigation-drawer>
     <v-main class="d-flex justify-center mt-2">
