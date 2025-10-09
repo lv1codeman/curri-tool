@@ -1,6 +1,7 @@
 <script setup>
 import { ref, computed } from "vue";
 import { useNuxtApp } from "#app";
+import { useRuntimeConfig } from "#app";
 
 //套用layout
 definePageMeta({
@@ -11,7 +12,8 @@ definePageMeta({
 // 🚨 您必須將此 Base URL 替換為您當前 ngrok 提供的公網地址！
 // 🚨 這是唯一能確保瀏覽器向正確的伺服器（FastAPI）發出下載請求的修改。
 // =================================================================
-const BASE_DOWNLOAD_URL = "https://25d75d1b61db.ngrok-free.app";
+const config = useRuntimeConfig();
+const BASE_DOWNLOAD_URL = config.public.apiBaseUrl;
 
 // =================================================================
 // 狀態管理：新增非同步任務追蹤狀態
@@ -261,10 +263,11 @@ const handleSubmit = function () {
             <v-card-title
               class="text-h4 text-sm-h3 text-center font-weight-bold mb-4"
             >
-              YouTube 媒體轉換器 (非同步)
+              YouTube下載器
             </v-card-title>
             <v-card-subtitle class="text-center mb-6">
-              輸入 YouTube 網址，選擇格式，伺服器將在背景處理任務。
+              <p>輸入 YouTube 網址，選擇格式，伺服器將在背景處理任務。</p>
+              <p>例如：https://www.youtube.com/watch?v=JfYbYIv2-tY</p>
             </v-card-subtitle>
 
             <!-- 狀態訊息區 (v-alert) -->
