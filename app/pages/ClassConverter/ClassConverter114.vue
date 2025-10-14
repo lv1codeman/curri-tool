@@ -55,6 +55,18 @@
           <v-col cols="auto" class="px-2 pb-5">
             <div class="d-flex flex-column ga-5">
               <v-btn
+                v-if="
+                  convert_type === '系辦助理Email' ||
+                  convert_type === '課務承辦人Email'
+                "
+                color="purple-lighten-3 text-grey-darken-4"
+                @click="copyUniqueEmails"
+                variant="elevated"
+              >
+                Email
+                <v-icon icon="mdi-email-multiple-outline" end></v-icon>
+              </v-btn>
+              <v-btn
                 color="green-lighten-3 text-grey-darken-4"
                 @click="copyToClipboard"
               >
@@ -141,7 +153,7 @@ const clearTextareas = () => {
   outputText.value = "";
 };
 
-// --- 複製到剪貼簿函式 ---
+// --- 複製到剪貼簿函式 (通用) ---
 const copyToClipboard = async () => {
   try {
     if (!navigator.clipboard) {
@@ -170,7 +182,54 @@ const copySampleToClipboard = async () => {
   }
 };
 
-// --- 頁面載入時獲取資料 ---
+// --- [修改功能] 複製不重複的 Email 函式，可處理兩種 Email 類型 ---
+const copyUniqueEmails = async () => {
+  const isAgentEmail = convert_type.value === "系辦助理Email";
+  const isCourseAgentEmail = convert_type.value === "課務承辦人Email";
+
+  if (
+    !inputText.value ||
+    (!isAgentEmail && !isCourseAgentEmail) ||
+    !classMap.value.size
+  ) {
+    return;
+  }
+
+  // 決定要提取哪個欄位
+  const emailKey = isAgentEmail ? "AGENT_EMAIL" : "CAGENT_EMAIL";
+
+  const lines = inputText.value.split("\n");
+  const emails = [];
+
+  // 1. 取得所有對應的 Email
+  lines.forEach((line) => {
+    const trimmedLine = line.trim();
+    const deptData = classMap.value.get(trimmedLine);
+
+    if (deptData && deptData[emailKey] && deptData[emailKey] !== "查無資料") {
+      emails.push(deptData[emailKey]);
+    }
+  });
+
+  // 2. 排除重複的 Email
+  const uniqueEmails = [...new Set(emails)];
+  const resultText = uniqueEmails.join("\n");
+
+  // 3. 複製到剪貼簿
+  try {
+    if (!navigator.clipboard) {
+      alert("你的瀏覽器不支援剪貼簿功能，請手動複製。");
+      return;
+    }
+    await navigator.clipboard.writeText(resultText);
+    snackbar.value = true; // 顯示成功提示
+  } catch (err) {
+    console.error("複製失敗:", err);
+    alert("複製失敗，請手動複製。");
+  }
+};
+
+// --- 頁面載入時獲取資料 (保持不變) ---
 onMounted(async () => {
   try {
     // 呼叫新的 API，只獲取一次所有資料
@@ -186,7 +245,7 @@ onMounted(async () => {
     console.error("載入資料失敗:", error);
   }
 
-  // textarea卷軸同步、拖曳同步效果
+  // textarea卷軸同步、拖曳同步效果 (保持不變)
   const inputTextArea = inputRef.value?.$el.querySelector("textarea");
   const outputTextArea = outputRef.value?.$el.querySelector("textarea");
 
@@ -223,7 +282,7 @@ onBeforeUnmount(() => {
   if (resizeObserverOutput) resizeObserverOutput.disconnect();
 });
 
-// --- 使用物件來管理轉換邏輯 ---
+// --- 使用物件來管理轉換邏輯 (保持不變) ---
 const conversionFunctions = {
   系所全名: (data) => data.DEPT,
   系所簡稱: (data) => data.DEPT_S,
@@ -251,7 +310,8 @@ const convertedText = computed(() => {
     const deptData = classMap.value.get(trimmedLine);
 
     if (!deptData) return "查無資料";
-    return convertFunc(deptData);
+    const result = convertFunc(deptData);
+    return result || "查無資料"; // 確保空值也回傳查無資料
   });
   return results.join("\n");
 });
