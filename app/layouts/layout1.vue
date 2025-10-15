@@ -62,15 +62,15 @@
             ></v-list-item>
           </template>
           <v-list-item
-            title="班級轉換(114)"
+            title="班級簡稱轉換"
             link
-            to="/ClassConverter/ClassConverter114"
+            to="/Converters/ClassToOthers"
             prepend-icon="mdi-file-swap"
           ></v-list-item>
           <v-list-item
             title="學制轉換"
             link
-            to="/ClassConverter/SystemConverter"
+            to="/Converters/SIDtoSYS"
             prepend-icon="mdi-file-swap"
           ></v-list-item>
         </v-list-group>
