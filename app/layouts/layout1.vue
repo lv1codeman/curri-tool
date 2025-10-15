@@ -67,6 +67,12 @@
             to="/ClassConverter/ClassConverter114"
             prepend-icon="mdi-file-swap"
           ></v-list-item>
+          <v-list-item
+            title="學制轉換"
+            link
+            to="/ClassConverter/SystemConverter"
+            prepend-icon="mdi-file-swap"
+          ></v-list-item>
         </v-list-group>
         <v-list-group value="tools">
           <template v-slot:activator="{ props }">
