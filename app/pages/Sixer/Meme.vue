@@ -31,7 +31,7 @@
       >
         <MemeCard
           :title="meme.title"
-          :image-url="meme.url"
+          :image-url="ensureHttps(meme.url)"
           @copy="copyImageToClipboard"
         />
       </v-col>
@@ -273,6 +273,12 @@ function showToast(text: string, color: string = "success") {
   snackbarText.value = text;
   snackbarColor.value = color;
   snackbar.value = true;
+}
+
+function ensureHttps(url: string) {
+  if (!url) return "";
+  // 確保回傳也是字串
+  return url.replace("http://", "https://");
 }
 
 // 生命週期
