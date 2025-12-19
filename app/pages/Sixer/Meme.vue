@@ -20,7 +20,7 @@
       </v-col>
     </v-row>
 
-    <v-row v-if="!isLoading" class="px-15">
+    <v-row v-if="!isLoading">
       <v-col
         v-for="(meme, index) in filteredMemes"
         :key="index"
@@ -28,42 +28,42 @@
         sm="6"
         md="4"
         lg="3"
-        class="py-4"
       >
         <v-menu
-          open-on-hover
-          :open-delay="200"
-          location="top center"
-          offset="15"
+          v-model="meme.showPreview"
+          :close-on-content-click="true"
+          location="center"
           transition="scale-transition"
+          min-width="300"
         >
-          <template v-slot:activator="{ props: menuProps }">
-            <div
-              v-bind="menuProps"
-              class="cursor-pointer transition-card"
-              @click="copyImageToClipboard(meme)"
-            >
-              <MemeCard
-                :title="meme.title"
-                :image-url="ensureHttps(meme.url)"
-                @copy="copyImageToClipboard"
-              />
-            </div>
+          <template v-slot:activator="{ props }">
+            <MemeCard
+              v-bind="props"
+              :title="meme.title"
+              :image-url="ensureHttps(meme.url)"
+              @copy="copyImageToClipboard"
+              @expand="meme.showPreview = true"
+            />
           </template>
 
-          <v-card
-            width="300"
-            elevation="24"
-            class="rounded-xl overflow-hidden border"
-          >
+          <v-card width="500" elevation="24" class="rounded-xl overflow-hidden">
             <v-img
               :src="ensureHttps(meme.url)"
-              max-height="400"
+              max-height="600"
               contain
               class="bg-grey-darken-4"
-            ></v-img>
-            <v-card-text class="bg-surface text-center py-2 font-weight-bold">
-              {{ meme.title }}
+            >
+              <template v-slot:placeholder>
+                <v-row class="fill-height ma-0" align="center" justify="center">
+                  <v-progress-circular
+                    indeterminate
+                    color="primary"
+                  ></v-progress-circular>
+                </v-row>
+              </template>
+            </v-img>
+            <v-card-text class="bg-surface text-center py-4 border-t">
+              <div class="text-h6 font-weight-bold">{{ meme.title }}</div>
             </v-card-text>
           </v-card>
         </v-menu>
@@ -86,20 +86,23 @@
         <v-progress-circular
           indeterminate
           color="primary"
+          size="50"
         ></v-progress-circular>
         <p class="mt-4">梗圖載入中...</p>
       </v-col>
     </v-row>
 
     <v-dialog v-model="uploadDialog" max-width="450px" persistent>
-      <v-card>
-        <v-card-title class="bg-primary text-white">上傳新梗圖</v-card-title>
+      <v-card class="rounded-lg">
+        <v-card-title class="bg-primary text-white px-6 py-4"
+          >上傳新梗圖</v-card-title
+        >
         <v-card-text class="pt-8 px-6">
           <v-text-field
             v-model="newTitle"
             label="梗圖描述與關鍵字"
             variant="outlined"
-            placeholder="例如：熊貓驚訝 表情包 嚇死我了"
+            placeholder="例如：驚訝貓咪 表情包"
             hint="輸入愈詳細，之後搜尋愈容易找到喔！"
             persistent-hint
             class="mb-10"
@@ -113,7 +116,7 @@
             :show-size="1024"
           ></v-file-input>
         </v-card-text>
-        <v-card-actions>
+        <v-card-actions class="pa-6">
           <v-spacer></v-spacer>
           <v-btn
             variant="text"
@@ -144,18 +147,17 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, mergeProps } from "vue";
+import { ref, computed, onMounted } from "vue";
 
-// 設定 Layout
+// Nuxt 配置
 definePageMeta({ layout: "layout1" });
-
-// 取得注入的 Axios 實例
 const { $curridataAPI } = useNuxtApp();
 
-// --- 狀態定義 ---
+// 狀態定義
 interface Meme {
   title: string;
   url: string;
+  showPreview?: boolean; // 用於控制每個卡片獨立的預覽狀態
 }
 
 const memes = ref<Meme[]>([]);
@@ -163,23 +165,22 @@ const searchQuery = ref("");
 const isLoading = ref(true);
 const uploadDialog = ref(false);
 const isUploading = ref(false);
-
-// 表單欄位
 const newTitle = ref("");
 const selectedFile = ref<File | File[] | null>(null);
-
-// Snackbar 狀態
 const snackbar = ref(false);
 const snackbarText = ref("");
 const snackbarColor = ref("success");
 
-// --- API 請求邏輯 ---
-
+// 1. 取得梗圖清單
 async function fetchMemes() {
   isLoading.value = true;
   try {
     const response = await ($curridataAPI as any).get("/api/memes");
-    memes.value = response.data;
+    // 🎯 初始化時為每個 meme 加入 showPreview 響應式屬性
+    memes.value = response.data.map((m: any) => ({
+      ...m,
+      showPreview: false,
+    }));
   } catch (error) {
     console.error("無法取得梗圖列表:", error);
     showToast("❌ 無法連線至伺服器", "error");
@@ -188,6 +189,7 @@ async function fetchMemes() {
   }
 }
 
+// 2. 處理上傳
 async function handleUpload() {
   if (!selectedFile.value || !newTitle.value) {
     showToast("請輸入名稱並選擇圖片", "warning");
@@ -203,9 +205,7 @@ async function handleUpload() {
   formData.append("title", newTitle.value);
 
   try {
-    await ($curridataAPI as any).post("/api/upload-meme", formData, {
-      headers: { "Content-Type": "multipart/form-data" },
-    });
+    await ($curridataAPI as any).post("/api/upload-meme", formData);
     showToast("✅ 梗圖上傳成功！", "success");
     closeUploadDialog();
     await fetchMemes();
@@ -216,8 +216,7 @@ async function handleUpload() {
   }
 }
 
-// --- 功能邏輯 ---
-
+// 3. 搜尋邏輯
 const filteredMemes = computed(() => {
   if (!searchQuery.value) return memes.value;
   const keywords = searchQuery.value.toLowerCase().trim().split(/\s+/);
@@ -227,14 +226,14 @@ const filteredMemes = computed(() => {
   });
 });
 
+// 4. 複製到剪貼簿
 async function copyImageToClipboard({ url, title }: Meme) {
   try {
     const finalUrl = url.replace("http://", "https://") + `?t=${Date.now()}`;
     const response = await fetch(finalUrl, {
       headers: { "ngrok-skip-browser-warning": "true" },
     });
-
-    if (!response.ok) throw new Error(`HTTP 錯誤: ${response.status}`);
+    if (!response.ok) throw new Error("Fetch 失敗");
     const blob = await response.blob();
 
     const img = new Image();
@@ -244,7 +243,7 @@ async function copyImageToClipboard({ url, title }: Meme) {
 
     await new Promise((resolve, reject) => {
       img.onload = resolve;
-      img.onerror = () => reject(new Error("Canvas 渲染失敗"));
+      img.onerror = reject;
     });
 
     const canvas = document.createElement("canvas");
@@ -269,6 +268,7 @@ async function copyImageToClipboard({ url, title }: Meme) {
   }
 }
 
+// 5. 輔助函數
 function closeUploadDialog() {
   uploadDialog.value = false;
   newTitle.value = "";
@@ -282,26 +282,12 @@ function showToast(text: string, color: string = "success") {
 }
 
 function ensureHttps(url: string) {
-  if (!url) return "";
-  return url.replace("http://", "https://");
+  return url ? url.replace("http://", "https://") : "";
 }
 
-onMounted(() => {
-  fetchMemes();
-});
+onMounted(fetchMemes);
 </script>
 
 <style scoped>
-.cursor-pointer {
-  cursor: pointer;
-}
-.transition-card {
-  width: 300px; /* 強制固定寬度，你可以改成你要的數值 (例如 200px) */
-  /* height: 320px; 強制固定高度 */
-  margin: 0 auto;
-  transition: transform 0.2s ease-in-out;
-}
-.transition-card:hover {
-  transform: translateY(-5px);
-}
+/* 這裡不需要額外的 CSS，因為大小由 MemeCard 控制 */
 </style>
