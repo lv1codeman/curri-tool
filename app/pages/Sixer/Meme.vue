@@ -20,7 +20,7 @@
       </v-col>
     </v-row>
 
-    <v-row v-if="!isLoading">
+    <v-row v-if="!isLoading" class="px-15">
       <v-col
         v-for="(meme, index) in filteredMemes"
         :key="index"
@@ -28,12 +28,45 @@
         sm="6"
         md="4"
         lg="3"
+        class="py-4"
       >
-        <MemeCard
-          :title="meme.title"
-          :image-url="ensureHttps(meme.url)"
-          @copy="copyImageToClipboard"
-        />
+        <v-menu
+          open-on-hover
+          :open-delay="200"
+          location="top center"
+          offset="15"
+          transition="scale-transition"
+        >
+          <template v-slot:activator="{ props: menuProps }">
+            <div
+              v-bind="menuProps"
+              class="cursor-pointer transition-card"
+              @click="copyImageToClipboard(meme)"
+            >
+              <MemeCard
+                :title="meme.title"
+                :image-url="ensureHttps(meme.url)"
+                @copy="copyImageToClipboard"
+              />
+            </div>
+          </template>
+
+          <v-card
+            width="300"
+            elevation="24"
+            class="rounded-xl overflow-hidden border"
+          >
+            <v-img
+              :src="ensureHttps(meme.url)"
+              max-height="400"
+              contain
+              class="bg-grey-darken-4"
+            ></v-img>
+            <v-card-text class="bg-surface text-center py-2 font-weight-bold">
+              {{ meme.title }}
+            </v-card-text>
+          </v-card>
+        </v-menu>
       </v-col>
 
       <v-col
@@ -61,7 +94,7 @@
     <v-dialog v-model="uploadDialog" max-width="450px" persistent>
       <v-card>
         <v-card-title class="bg-primary text-white">上傳新梗圖</v-card-title>
-        <v-card-text class="pt-4">
+        <v-card-text class="pt-8 px-6">
           <v-text-field
             v-model="newTitle"
             label="梗圖描述與關鍵字"
@@ -69,7 +102,7 @@
             placeholder="例如：熊貓驚訝 表情包 嚇死我了"
             hint="輸入愈詳細，之後搜尋愈容易找到喔！"
             persistent-hint
-            class="mb-4"
+            class="mb-10"
           ></v-text-field>
           <v-file-input
             v-model="selectedFile"
@@ -111,7 +144,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from "vue";
+import { ref, computed, onMounted, mergeProps } from "vue";
 
 // 設定 Layout
 definePageMeta({ layout: "layout1" });
@@ -142,7 +175,6 @@ const snackbarColor = ref("success");
 
 // --- API 請求邏輯 ---
 
-// 1. 取得梗圖清單 (整合 Axios)
 async function fetchMemes() {
   isLoading.value = true;
   try {
@@ -150,13 +182,12 @@ async function fetchMemes() {
     memes.value = response.data;
   } catch (error) {
     console.error("無法取得梗圖列表:", error);
-    showToast("❌ 無法連線至伺服器，請檢查後端是否啟動", "error");
+    showToast("❌ 無法連線至伺服器", "error");
   } finally {
     isLoading.value = false;
   }
 }
 
-// 2. 處理上傳 (整合 Axios + FormData)
 async function handleUpload() {
   if (!selectedFile.value || !newTitle.value) {
     showToast("請輸入名稱並選擇圖片", "warning");
@@ -165,8 +196,6 @@ async function handleUpload() {
 
   isUploading.value = true;
   const formData = new FormData();
-
-  // 處理 Vuetify 可能產生的陣列格式
   const file = Array.isArray(selectedFile.value)
     ? selectedFile.value[0]
     : selectedFile.value;
@@ -174,19 +203,14 @@ async function handleUpload() {
   formData.append("title", newTitle.value);
 
   try {
-    // 🎯 呼叫 FastAPI 上傳 API
     await ($curridataAPI as any).post("/api/upload-meme", formData, {
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
+      headers: { "Content-Type": "multipart/form-data" },
     });
-
     showToast("✅ 梗圖上傳成功！", "success");
     closeUploadDialog();
-    await fetchMemes(); // 重新讀取清單
+    await fetchMemes();
   } catch (error) {
-    console.error("上傳失敗:", error);
-    showToast("❌ 上傳失敗，請稍後再試", "error");
+    showToast("❌ 上傳失敗", "error");
   } finally {
     isUploading.value = false;
   }
@@ -194,39 +218,25 @@ async function handleUpload() {
 
 // --- 功能邏輯 ---
 
-// 搜尋過濾
 const filteredMemes = computed(() => {
   if (!searchQuery.value) return memes.value;
-
-  // 將搜尋詞轉為小寫，並支援空白分割多關鍵字 (例如搜尋: "熊貓 驚訝")
   const keywords = searchQuery.value.toLowerCase().trim().split(/\s+/);
-
   return memes.value.filter((meme) => {
     const title = meme.title.toLowerCase();
-    // 必須包含所有的關鍵字才顯示
     return keywords.every((key) => title.includes(key));
   });
 });
 
-// 複製圖片到剪貼簿 (用於直接在 Discord/Line 貼上)
 async function copyImageToClipboard({ url, title }: Meme) {
   try {
-    // 1. 強制確保 URL 使用 HTTPS 並加上時間戳破解快取
     const finalUrl = url.replace("http://", "https://") + `?t=${Date.now()}`;
-
-    // 2. 使用 fetch 抓取 blob，這會直接測試 CORS
     const response = await fetch(finalUrl, {
-      method: "GET",
-      mode: "cors", // 🎯 強制開啟 CORS 模式
-      headers: {
-        "ngrok-skip-browser-warning": "true",
-      },
+      headers: { "ngrok-skip-browser-warning": "true" },
     });
 
     if (!response.ok) throw new Error(`HTTP 錯誤: ${response.status}`);
     const blob = await response.blob();
 
-    // 3. 建立 Image 並畫入 Canvas (為了轉成 LINE 能用的 PNG)
     const img = new Image();
     img.crossOrigin = "anonymous";
     const objectUrl = URL.createObjectURL(blob);
@@ -249,26 +259,22 @@ async function copyImageToClipboard({ url, title }: Meme) {
         await navigator.clipboard.write([item]);
         showToast(`✅ 已複製 「${title}」`, "success");
       } catch (err) {
-        console.error("剪貼簿寫入錯誤:", err);
         showToast("❌ 寫入剪貼簿失敗", "error");
       } finally {
-        URL.revokeObjectURL(objectUrl); // 釋放記憶體
+        URL.revokeObjectURL(objectUrl);
       }
     }, "image/png");
   } catch (err) {
-    console.error("複製完整錯誤細節:", err);
-    showToast("❌ 權限不足或 Server 設定錯誤", "error");
+    showToast("❌ 複製失敗", "error");
   }
 }
 
-// 關閉對話框並重置
 function closeUploadDialog() {
   uploadDialog.value = false;
   newTitle.value = "";
   selectedFile.value = null;
 }
 
-// 顯示提示
 function showToast(text: string, color: string = "success") {
   snackbarText.value = text;
   snackbarColor.value = color;
@@ -277,11 +283,9 @@ function showToast(text: string, color: string = "success") {
 
 function ensureHttps(url: string) {
   if (!url) return "";
-  // 確保回傳也是字串
   return url.replace("http://", "https://");
 }
 
-// 生命週期
 onMounted(() => {
   fetchMemes();
 });
@@ -290,5 +294,14 @@ onMounted(() => {
 <style scoped>
 .cursor-pointer {
   cursor: pointer;
+}
+.transition-card {
+  width: 300px; /* 強制固定寬度，你可以改成你要的數值 (例如 200px) */
+  /* height: 320px; 強制固定高度 */
+  margin: 0 auto;
+  transition: transform 0.2s ease-in-out;
+}
+.transition-card:hover {
+  transform: translateY(-5px);
 }
 </style>

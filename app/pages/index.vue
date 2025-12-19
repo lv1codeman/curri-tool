@@ -66,7 +66,7 @@ const handleContainerClick = () => {
     isFlashing.value = false;
     // 等待淡出動畫完成後導航
     setTimeout(() => {
-      router.push("/Converters/ClassToOthers");
+      router.push("/welcome");
     }, 300); // 這裡的 500ms 應與 .fade-out-and-rotate 的 animation-duration 相同 (1s * 0.5)
   }
 };

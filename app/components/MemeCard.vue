@@ -22,6 +22,6 @@ defineEmits(["copy"]);
 
 <style scoped>
 .bg-black-alpha-50 {
-  background: rgba(0, 0, 0, 0.5);
+  background: rgba(0, 0, 0, 0.65);
 }
 </style>
