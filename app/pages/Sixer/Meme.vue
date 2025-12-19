@@ -64,9 +64,12 @@
         <v-card-text class="pt-4">
           <v-text-field
             v-model="newTitle"
-            label="梗圖名稱 (例如：霹靂卡霹靂拉拉)"
+            label="梗圖描述與關鍵字"
             variant="outlined"
-            placeholder="請輸入易於搜尋的名稱"
+            placeholder="例如：熊貓驚訝 表情包 嚇死我了"
+            hint="輸入愈詳細，之後搜尋愈容易找到喔！"
+            persistent-hint
+            class="mb-4"
           ></v-text-field>
           <v-file-input
             v-model="selectedFile"
@@ -194,8 +197,15 @@ async function handleUpload() {
 // 搜尋過濾
 const filteredMemes = computed(() => {
   if (!searchQuery.value) return memes.value;
-  const q = searchQuery.value.toLowerCase().trim();
-  return memes.value.filter((m) => m.title.toLowerCase().includes(q));
+
+  // 將搜尋詞轉為小寫，並支援空白分割多關鍵字 (例如搜尋: "熊貓 驚訝")
+  const keywords = searchQuery.value.toLowerCase().trim().split(/\s+/);
+
+  return memes.value.filter((meme) => {
+    const title = meme.title.toLowerCase();
+    // 必須包含所有的關鍵字才顯示
+    return keywords.every((key) => title.includes(key));
+  });
 });
 
 // 複製圖片到剪貼簿 (用於直接在 Discord/Line 貼上)
