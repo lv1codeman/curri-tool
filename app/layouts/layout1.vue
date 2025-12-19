@@ -128,6 +128,12 @@
             ></v-list-item>
           </template>
           <v-list-item
+            title="梗圖搜尋"
+            link
+            to="/Sixer/Meme"
+            prepend-icon="mdi-image"
+          ></v-list-item>
+          <v-list-item
             title="Minecraft"
             link
             to="/Sixer/Minecraft"

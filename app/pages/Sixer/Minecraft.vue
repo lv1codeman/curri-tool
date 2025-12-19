@@ -1,35 +1,23 @@
 <template>
-  <div class="card-grid-container">
-    <div class="card-grid">
-      <CopyCard
-        title="要塞（Stronghold）"
-        :subtitle="find_stronghold"
-        @copy="copyCode($event)"
-        class="card-item"
-      />
-
-      <CopyCard
-        title="堡壘遺跡（Bastion Remnant）"
-        :subtitle="find_bastion_remnant"
-        @copy="copyCode($event)"
-        class="card-item"
-      />
-
-      <CopyCard
-        title="地獄堡壘（Nether Fortress）"
-        :subtitle="find_fortress"
-        @copy="copyCode($event)"
-        class="card-item"
-      />
-
-      <CopyCard
-        title="扭曲森林（Warped Forest)"
-        :subtitle="find_warped_forest"
-        @copy="copyCode($event)"
-        class="card-item"
-      />
-    </div>
-  </div>
+  <v-container>
+    <v-row>
+      <v-col
+        v-for="(item, index) in mcCommands"
+        :key="index"
+        cols="12"
+        sm="6"
+        md="4"
+        lg="3"
+      >
+        <CopyCard
+          :title="item.title"
+          :subtitle="item.command"
+          @copy="copyCode($event)"
+          class="h-100"
+        />
+      </v-col>
+    </v-row>
+  </v-container>
 
   <v-snackbar
     v-model="snackbar"
@@ -38,7 +26,6 @@
     location="bottom right"
   >
     {{ snackbarText }}
-
     <template v-slot:actions>
       <v-btn color="white" variant="text" @click="snackbar = false">
         關閉
@@ -49,64 +36,55 @@
 
 <script setup>
 import { ref } from "vue";
-import CopyCard from "@/components/CopyCard.vue"; // 確保路徑正確
+import CopyCard from "@/components/CopyCard.vue";
 
-// 忽略 Nuxt 相關 import (保持簡潔)
 definePageMeta({
   layout: "layout1",
 });
 
-// 1. 響應式狀態 (指令變數)
-const find_warped_forest = "/locate biome minecraft:warped_forest";
-const find_stronghold = "/locate structure minecraft:stronghold";
-const find_bastion_remnant = "/locate structure minecraft:bastion_remnant";
-const find_fortress = "/locate structure minecraft:fortress";
+// 1. 結構化的資料陣列：未來要新增指令直接加在這裡
+const mcCommands = [
+  {
+    title: "要塞（Stronghold）",
+    command: "/locate structure minecraft:stronghold",
+  },
+  {
+    title: "堡壘遺跡（Bastion Remnant）",
+    command: "/locate structure minecraft:bastion_remnant",
+  },
+  {
+    title: "地獄堡壘（Nether Fortress）",
+    command: "/locate structure minecraft:fortress",
+  },
+  {
+    title: "扭曲森林（Warped Forest)",
+    command: "/locate biome minecraft:warped_forest",
+  },
+  // 你可以輕鬆地繼續增加，例如：
+  // { title: "末地城 (End City)", command: "/locate structure minecraft:end_city" }
+];
 
-// 2. 複製邏輯所需的本地狀態
+// 2. 狀態管理
 const snackbar = ref(false);
 const snackbarText = ref("");
 
-// 3. 函數：處理複製和通知 (本地實現)
+// 3. 複製邏輯
 async function copyCode(codeToCopy) {
   try {
-    // 核心複製邏輯
     await navigator.clipboard.writeText(codeToCopy);
-
-    // 複製成功，更新本地 ref
     snackbarText.value = "✅ 指令已成功複製到剪貼簿！";
     snackbar.value = true;
   } catch (err) {
     console.error("無法複製文字:", err);
-    snackbarText.value =
-      "❌ 複製失敗：您的瀏覽器可能不支援自動複製功能。請手動複製。";
+    snackbarText.value = "❌ 複製失敗，請手動複製。";
     snackbar.value = true;
   }
 }
 </script>
 
 <style scoped>
-/* 1. 外層容器：設置最大寬度並置中 */
-.card-grid-container {
-  /* 將 max-width 更新為 1516px (1500 + 16) */
-  max-width: 1500px;
-  margin: 0 auto;
-  padding: 0 20px;
-}
-
-/* 2. 內層 Flexbox 容器：控制間距和換行 */
-.card-grid {
-  display: flex;
-  flex-wrap: wrap;
-}
-
-/* 3. 確保卡片寬度為 500px，垂直間距保持不變 */
-.card-item {
-  min-width: 350px;
-  flex-shrink: 1;
-  margin-bottom: 20px; /* 垂直間距也建議同步改為 8px，以保持視覺一致 */
-}
-
-.cursor-pointer {
-  cursor: pointer;
+/* 移除原本複雜的 .card-grid 樣式，交給 Vuetify 處理 */
+.h-100 {
+  height: 100%;
 }
 </style>
