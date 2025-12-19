@@ -45,6 +45,12 @@
           to="/welcome"
           prepend-icon="mdi-home-outline"
         ></v-list-item>
+        <v-list-item
+          title="資訊速查"
+          link
+          to="/Info/info"
+          prepend-icon="mdi-information"
+        ></v-list-item>
         <v-list-group value="database_maintenance">
           <template v-slot:activator="{ props }">
             <v-list-item

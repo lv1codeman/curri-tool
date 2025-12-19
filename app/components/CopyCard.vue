@@ -1,11 +1,14 @@
 <template>
   <v-card
+    hover
     class="mx-auto cursor-pointer"
-    max-width="400"
     :title="title"
     :subtitle="subtitle"
     @click="$emit('copy', subtitle)"
   >
+    <template v-slot:append>
+      <v-icon icon="mdi-content-copy" size="small" color="grey"></v-icon>
+    </template>
   </v-card>
 </template>
 
