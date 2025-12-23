@@ -2,7 +2,7 @@
   <v-card hover class="mx-auto h-100 transition-card">
     <v-img
       :src="imageUrl"
-      height="200px"
+      height="150px"
       cover
       class="align-end cursor-pointer"
       @click.stop="$emit('copy', { url: imageUrl, title: title })"
@@ -33,7 +33,7 @@ defineEmits(["copy", "expand"]); // 新增 expand 事件
   cursor: pointer;
 }
 .transition-card {
-  width: 300px; /* 強制固定寬度，你可以改成你要的數值 (例如 200px) */
+  width: 220px; /* 強制固定寬度，你可以改成你要的數值 (例如 200px) */
   /* height: 320px; 強制固定高度 */
   margin: 0 auto;
   transition: transform 0.2s ease-in-out;

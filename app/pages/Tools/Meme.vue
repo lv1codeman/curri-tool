@@ -1,5 +1,5 @@
 <template>
-  <v-container>
+  <v-container style="max-width: 1300px">
     <v-row justify="center" class="mb-6">
       <v-col cols="12" md="6" class="d-flex align-center">
         <v-text-field

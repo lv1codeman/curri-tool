@@ -24,7 +24,7 @@
         ></template>
       </v-card>
       <v-card
-        class="card-item cursor-pointer"
+        class="card-item cursor-pointer card-group-color"
         title="開設科目更正表(前台)"
         subtitle="課務組前台(需登入gm信箱)"
         :href="'https://acadaff.ncue.edu.tw/var/file/2/1002/img/1013/coursereview.html'"
@@ -35,7 +35,7 @@
         ></template>
       </v-card>
       <v-card
-        class="card-item cursor-pointer"
+        class="card-item cursor-pointer card-group-color"
         title="開設科目更正表(後台)"
         subtitle="課務組後台(需登入gm信箱)"
         :href="'https://docs.google.com/spreadsheets/d/19CMRhHc12KVf6ntq75oao-jOjIk4GgGvEgWqBp2C7L0/edit?gid=1708200949#gid=1708200949'"
@@ -69,7 +69,7 @@
         ></template>
       </v-card>
       <v-card
-        class="card-item cursor-pointer"
+        class="card-item cursor-pointer card-group-color"
         title="教務處網站(前台)"
         subtitle="需登入單一簽入"
         :href="'https://acadaff.ncue.edu.tw'"
@@ -80,7 +80,7 @@
         ></template>
       </v-card>
       <v-card
-        class="card-item cursor-pointer"
+        class="card-item cursor-pointer card-group-color"
         title="教務處網站(後台)"
         subtitle="需登入單一簽入"
         :href="'https://acadaff.ncue.edu.tw/platform/'"
@@ -92,6 +92,29 @@
       </v-card>
       <v-card
         class="card-item cursor-pointer"
+        title="學生入口"
+        subtitle="每學期選課時程"
+        :href="'https://webap2.ncue.edu.tw/curri/stuEntry.html'"
+        target="_blank"
+      >
+        <template v-slot:append>
+          <v-icon icon="mdi-link" size="small" color="grey"></v-icon
+        ></template>
+      </v-card>
+      <v-card
+        class="card-item cursor-pointer"
+        title="學程平台"
+        subtitle="仍未完善"
+        :href="'https://webap1.ncue.edu.tw/PRO/'"
+        target="_blank"
+      >
+        <template v-slot:append>
+          <v-icon icon="mdi-link" size="small" color="grey"></v-icon
+        ></template>
+      </v-card>
+
+      <v-card
+        class="card-item cursor-pointer card-group-color"
         title="模擬學生"
         subtitle="需設定IP"
         :href="'https://webapss.ncue.edu.tw/Student/baseuser/login_ori'"
@@ -102,7 +125,7 @@
         ></template>
       </v-card>
       <v-card
-        class="card-item cursor-pointer"
+        class="card-item cursor-pointer card-group-color"
         title="模擬老師"
         subtitle="需設定IP"
         :href="'https://webapss.ncue.edu.tw/Teacher/baseuser/login_ori'"
@@ -143,9 +166,13 @@ definePageMeta({
   width: 300px;
   flex-shrink: 1;
   margin-bottom: 20px; /* 垂直間距也建議同步改為 8px，以保持視覺一致 */
+  background-color: rgba(255, 240, 194, 50%);
 }
 
 .cursor-pointer {
   cursor: pointer;
+}
+.card-group-color {
+  background-color: rgba(194, 225, 255, 50%);
 }
 </style>

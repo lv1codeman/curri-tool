@@ -9,9 +9,16 @@
 
       <div class="d-flex align-center pr-4">
         <template v-if="isLoggedIn">
-          <span class="mr-3 text-subtitle-1 font-weight-bold">
-            歡迎，{{ user.name }} ({{ user.username }})
-          </span>
+          <div v-if="user">
+            <span class="mr-3 text-subtitle-1 font-weight-bold">
+              歡迎，{{ user.name }} ({{ user.username }})
+            </span>
+          </div>
+
+          <div v-else>
+            <span>請先登入</span>
+          </div>
+
           <v-btn
             prepend-icon="mdi-logout"
             color="error"
@@ -87,7 +94,7 @@
           <template v-slot:activator="{ props }">
             <v-list-item
               v-bind="props"
-              prepend-icon="mdi-tools"
+              prepend-icon="mdi-toolbox"
               title="課務工具"
             ></v-list-item>
           </template>
@@ -108,10 +115,16 @@
           <template v-slot:activator="{ props }">
             <v-list-item
               v-bind="props"
-              prepend-icon="mdi-star-circle-outline"
+              prepend-icon="mdi-tools"
               title="其他工具"
             ></v-list-item>
           </template>
+          <v-list-item
+            title="梗圖搜尋"
+            link
+            to="/Tools/Meme"
+            prepend-icon="mdi-image"
+          ></v-list-item>
           <v-list-item
             title="Youtube影片下載"
             link
@@ -127,12 +140,7 @@
               title="Sixer"
             ></v-list-item>
           </template>
-          <v-list-item
-            title="梗圖搜尋"
-            link
-            to="/Sixer/Meme"
-            prepend-icon="mdi-image"
-          ></v-list-item>
+
           <v-list-item
             title="Minecraft"
             link
@@ -240,6 +248,7 @@
 import { ref, computed, onMounted } from "vue"; // 🎯 引入 onMounted
 import { useNuxtApp } from "#app";
 import { navigateTo } from "#app";
+import axios from "axios";
 
 // 假設您的 axios 實例名稱為 $curridataAPI
 const { $curridataAPI } = useNuxtApp();
@@ -267,6 +276,11 @@ const isAdmin = computed(() => {
   return user.value && user.value.auth === "admin";
 });
 
+const isCurri = computed(() => {
+  // 只有在 user 存在且 user.auth 嚴格等於 'curri' 時，視為課務組員
+  return user.value && user.value.auth === "curri";
+});
+
 // -----------------------------------------------------------------
 // 🎯 狀態持久化：讀取 localStorage (在伺服器端渲染之後執行)
 // -----------------------------------------------------------------
@@ -287,10 +301,6 @@ onMounted(() => {
     }
   }
 });
-
-// -----------------------------------------------------------------
-// 🎯 登入/登出邏輯 (使用 /api/user_login)
-// -----------------------------------------------------------------
 
 /**
  * 處理登入請求：呼叫後端 /api/user_login 接口進行驗證
@@ -317,34 +327,39 @@ async function login() {
       username: response.data.user.username,
     };
     user.value = userData;
-    dialog.value = false; // 關閉對話框
+    dialog.value = false;
 
-    // 🎯 關鍵修改：將使用者資訊存入 localStorage
     if (typeof localStorage !== "undefined") {
       localStorage.setItem("curridata_user", JSON.stringify(userData));
     }
 
-    // 清除密碼輸入框
     password.value = "";
-
-    // 登入成功後導向首頁
-    // 由於您原來的導向是 /welcome，我將其保留，但如果您希望是 /，請自行修改
     navigateTo("/welcome", { replace: true });
   } catch (error) {
-    // 登入失敗 (401 錯誤或網路錯誤)
-    const status = error.response?.status;
+    // 🎯 使用 axios.isAxiosError 解決 TypeScript 'unknown' 錯誤
+    if (axios.isAxiosError(error)) {
+      const status = error.response?.status;
 
-    if (status === 401) {
-      // 使用後端返回的錯誤訊息
-      loginError.value =
-        error.response?.data?.detail || "帳號或密碼錯誤，請重新輸入。";
+      if (status === 401) {
+        // 情況 A：後端明確回傳 401 (帳密錯誤)
+        loginError.value =
+          error.response?.data?.detail || "帳號或密碼錯誤，請重新輸入。";
+      } else if (!error.response) {
+        // 情況 B：完全沒收到回應 (網路斷線或伺服器當機)
+        loginError.value = "無法連線至伺服器，請檢查網路連線。";
+      } else {
+        // 情況 C：其他 HTTP 錯誤 (如 500, 404 等)
+        loginError.value = `伺服器回應異常 (${status})，請稍後再試。`;
+      }
+      console.error("Axios 登入錯誤:", error.response?.data || error.message);
     } else {
-      console.error("登入 API 錯誤:", error);
-      loginError.value = "伺服器或網路錯誤，請稍後再試。";
+      // 情況 D：非 Axios 產生的錯誤 (例如程式碼邏輯噴錯)
+      console.error("非 API 錯誤:", error);
+      loginError.value = "系統發生未知錯誤。";
     }
-    user.value = null; // 確保狀態是登出
 
-    // 🎯 登入失敗時也清除可能的舊狀態
+    // 登入失敗處理
+    user.value = null;
     if (typeof localStorage !== "undefined") {
       localStorage.removeItem("curridata_user");
     }

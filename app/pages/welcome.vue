@@ -144,9 +144,7 @@
         >
           <v-list-item three-line>
             <v-list-item-title class="text-h6 mb-1">
-              <v-icon color="orange-darken-2" class="mr-2"
-                >mdi-download-box</v-icon
-              >
+              <v-icon color="orange-darken-2" class="mr-2">mdi-tools</v-icon>
               其他工具
             </v-list-item-title>
             <v-list-item-subtitle>
