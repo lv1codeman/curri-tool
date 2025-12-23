@@ -205,11 +205,21 @@ async function handleUpload() {
   formData.append("title", newTitle.value);
 
   try {
-    await ($curridataAPI as any).post("/api/upload-meme", formData);
+    await ($curridataAPI as any).post("/api/upload-meme", formData, {
+      // 關鍵點：將 Content-Type 設為 undefined
+      // 這會告訴 Axios 不要使用插件裡的 application/json
+      // 瀏覽器發現 body 是 FormData 後，會自動補上 multipart/form-data 並加上正確的 boundary
+      headers: {
+        "Content-Type": undefined,
+      },
+    });
+
     showToast("✅ 梗圖上傳成功！", "success");
     closeUploadDialog();
     await fetchMemes();
-  } catch (error) {
+  } catch (error: any) {
+    // 增加錯誤日誌，方便你看到 FastAPI 回傳的具體驗證失敗原因
+    console.error("上傳失敗細節:", error.response?.data);
     showToast("❌ 上傳失敗", "error");
   } finally {
     isUploading.value = false;

@@ -76,19 +76,17 @@
           class="pa-4 quick-entry-card"
           elevation="3"
           link
-          to="/DB/DBmaintain"
+          to="/Info/Info"
           color="blue-grey-lighten-5"
         >
           <v-list-item three-line>
             <v-list-item-title class="text-h6 mb-1">
               <v-icon color="blue-grey-darken-2" class="mr-2"
-                >mdi-database-cog</v-icon
+                >mdi-information</v-icon
               >
-              系所表維護
+              資料速查
             </v-list-item-title>
-            <v-list-item-subtitle>
-              管理和更新系所的基本資料。
-            </v-list-item-subtitle>
+            <v-list-item-subtitle> 課務相關資料速查 </v-list-item-subtitle>
           </v-list-item>
         </v-card>
       </v-col>

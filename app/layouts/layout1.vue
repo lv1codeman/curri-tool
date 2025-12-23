@@ -48,7 +48,7 @@
         <v-list-item
           title="資訊速查"
           link
-          to="/Info/info"
+          to="/Info/Info"
           prepend-icon="mdi-information"
         ></v-list-item>
         <v-list-group value="database_maintenance">

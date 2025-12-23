@@ -8,6 +8,9 @@
         :href="'https://acadaff.ncue.edu.tw/p/412-1002-2143.php?Lang=zh-tw'"
         target="_blank"
       >
+        <template v-slot:append>
+          <v-icon icon="mdi-link" size="small" color="grey"></v-icon
+        ></template>
       </v-card>
       <v-card
         class="card-item cursor-pointer"
@@ -16,6 +19,98 @@
         :href="'https://acadaff.ncue.edu.tw/var/file/2/1002/img/786/691174704.pdf'"
         target="_blank"
       >
+        <template v-slot:append>
+          <v-icon icon="mdi-link" size="small" color="grey"></v-icon
+        ></template>
+      </v-card>
+      <v-card
+        class="card-item cursor-pointer"
+        title="開設科目更正表(前台)"
+        subtitle="課務組前台(需登入gm信箱)"
+        :href="'https://acadaff.ncue.edu.tw/var/file/2/1002/img/1013/coursereview.html'"
+        target="_blank"
+      >
+        <template v-slot:append>
+          <v-icon icon="mdi-link" size="small" color="grey"></v-icon
+        ></template>
+      </v-card>
+      <v-card
+        class="card-item cursor-pointer"
+        title="開設科目更正表(後台)"
+        subtitle="課務組後台(需登入gm信箱)"
+        :href="'https://docs.google.com/spreadsheets/d/19CMRhHc12KVf6ntq75oao-jOjIk4GgGvEgWqBp2C7L0/edit?gid=1708200949#gid=1708200949'"
+        target="_blank"
+      >
+        <template v-slot:append>
+          <v-icon icon="mdi-link" size="small" color="grey"></v-icon
+        ></template>
+      </v-card>
+
+      <v-card
+        class="card-item cursor-pointer"
+        title="課務組NAS"
+        subtitle="課務組雲端"
+        :href="'http://10.22.2.164:8080/cgi-bin/'"
+        target="_blank"
+      >
+        <template v-slot:append>
+          <v-icon icon="mdi-link" size="small" color="grey"></v-icon
+        ></template>
+      </v-card>
+      <v-card
+        class="card-item cursor-pointer"
+        title="NCUE通訊錄"
+        subtitle="需登入單一簽入"
+        :href="'https://portal.ncue.edu.tw/portal/contacts/'"
+        target="_blank"
+      >
+        <template v-slot:append>
+          <v-icon icon="mdi-link" size="small" color="grey"></v-icon
+        ></template>
+      </v-card>
+      <v-card
+        class="card-item cursor-pointer"
+        title="教務處網站(前台)"
+        subtitle="需登入單一簽入"
+        :href="'https://acadaff.ncue.edu.tw'"
+        target="_blank"
+      >
+        <template v-slot:append>
+          <v-icon icon="mdi-link" size="small" color="grey"></v-icon
+        ></template>
+      </v-card>
+      <v-card
+        class="card-item cursor-pointer"
+        title="教務處網站(後台)"
+        subtitle="需登入單一簽入"
+        :href="'https://acadaff.ncue.edu.tw/platform/'"
+        target="_blank"
+      >
+        <template v-slot:append>
+          <v-icon icon="mdi-link" size="small" color="grey"></v-icon
+        ></template>
+      </v-card>
+      <v-card
+        class="card-item cursor-pointer"
+        title="模擬學生"
+        subtitle="需設定IP"
+        :href="'https://webapss.ncue.edu.tw/Student/baseuser/login_ori'"
+        target="_blank"
+      >
+        <template v-slot:append>
+          <v-icon icon="mdi-link" size="small" color="grey"></v-icon
+        ></template>
+      </v-card>
+      <v-card
+        class="card-item cursor-pointer"
+        title="模擬老師"
+        subtitle="需設定IP"
+        :href="'https://webapss.ncue.edu.tw/Teacher/baseuser/login_ori'"
+        target="_blank"
+      >
+        <template v-slot:append>
+          <v-icon icon="mdi-link" size="small" color="grey"></v-icon
+        ></template>
       </v-card>
     </div>
   </div>
