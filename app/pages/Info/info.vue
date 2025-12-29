@@ -71,7 +71,7 @@
       <v-card
         class="card-item cursor-pointer card-group-color"
         title="教務處網站(前台)"
-        subtitle="需登入單一簽入"
+        subtitle="RPAGE"
         :href="'https://acadaff.ncue.edu.tw'"
         target="_blank"
       >
@@ -82,7 +82,7 @@
       <v-card
         class="card-item cursor-pointer card-group-color"
         title="教務處網站(後台)"
-        subtitle="需登入單一簽入"
+        subtitle="需登入"
         :href="'https://acadaff.ncue.edu.tw/platform/'"
         target="_blank"
       >
@@ -129,6 +129,28 @@
         title="模擬老師"
         subtitle="需設定IP"
         :href="'https://webapss.ncue.edu.tw/Teacher/baseuser/login_ori'"
+        target="_blank"
+      >
+        <template v-slot:append>
+          <v-icon icon="mdi-link" size="small" color="grey"></v-icon
+        ></template>
+      </v-card>
+      <v-card
+        class="card-item cursor-pointer"
+        title="台灣銀行學雜費入口網"
+        subtitle="查詢學生繳費"
+        :href="'https://school.bot.com.tw/newTwbank/StudentLogin.aspx?id=Student'"
+        target="_blank"
+      >
+        <template v-slot:append>
+          <v-icon icon="mdi-link" size="small" color="grey"></v-icon
+        ></template>
+      </v-card>
+      <v-card
+        class="card-item cursor-pointer"
+        title="校園資訊服務入口"
+        subtitle="單一簽入"
+        :href="'https://portal.ncue.edu.tw/portal/home.php'"
         target="_blank"
       >
         <template v-slot:append>
