@@ -110,6 +110,12 @@
             to="/Converters/SIDtoSYS"
             prepend-icon="mdi-file-swap"
           ></v-list-item>
+          <v-list-item
+            title="生日轉民國年"
+            link
+            to="/Converters/Bdate"
+            prepend-icon="mdi-file-swap"
+          ></v-list-item>
         </v-list-group>
         <v-list-group value="tools">
           <template v-slot:activator="{ props }">
